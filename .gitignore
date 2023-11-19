@@ -1,0 +1,3 @@
+# ignore the secrets.js credentials
+
+assets/js/secrets.js
