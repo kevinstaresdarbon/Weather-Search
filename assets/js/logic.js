@@ -154,7 +154,7 @@ function renderHistory(arr, element) {
 }
 
 
-$('#lookup-button').on("click", handleLookup);
+$(document).on("submit", handleLookup);
 $(document).on("click", '.location-btn', handleSearch);
 
 renderHistory(JSON.parse(retrieveHistory()), $('#history'));
