@@ -1,21 +1,23 @@
 
-async function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, iconcode, $element, timestring) {
+dayjs.extend(window.dayjs_plugin_advancedFormat);
 
-    if (!timestring){
-        timestring = "Now";
-    }
+async function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, iconcode, $element, timestamp) {
+
+    var startOfMonth = dayjs().startOf('month');
+    var currentTime = dayjs(timestamp*1000);
+
     var cardTemplate = (`<section class="card text-bg-light" style="width:250px;">
                             <div class="icon" class="card-image-top">
                                 <img class="wicon" src="http://openweathermap.org/img/w/` + iconcode + `.png" alt="Weather icon"></img>
                             </div>
                             <div class="card-body card-content"> 
                                 <div class="card-title fs-5">` + location + `</div>
-                                <div class="card-title fs-5">` +  timestring + `</div>
+                                <div class="card-title fs-5">` +  currentTime.format("dddd [the] Do [of] MMMM, YYYY") + `</div>
                                 <div class="card-title card-temp fs-5"> Temperature: `+ temp + ` °c </div>
                                 <div class="card-title card-temp fs-5"> Feels like: ` + feelsLike + ` °c </div>
                                 <div class="card-title card-humidity fs-5"> Humidity: ` + humidity + `</div>
                                 <div class="card-title card-wind fs-5"> Wind Speed: ` + windSpeed +`</div>
-                                <div class="card-title card-wind fs-5"> Wind Directon: ` + windDir + `° </div>
+                                <div class="card-title card-wind fs-5"> Wind Direction: ` + windDir + `° </div>
                             </div> 
                         </section>`);
 
@@ -106,7 +108,7 @@ async function handleSearch(event) {
             .then((data) => {
                 console.log(data);
                 $('#today').empty();
-                cardMaker(data.name, data.main.temp, data.main.feels_like, data.main.humidity, data.wind.speed, data.wind.deg, data.weather[0].icon, $('#today'), data.dt_txt);
+                cardMaker(data.name, data.main.temp, data.main.feels_like, data.main.humidity, data.wind.speed, data.wind.deg, data.weather[0].icon, $('#today'), data.dt);
             })
             .catch((err) => console.log("An error occured while fetching the current data: " + err));
 
@@ -121,7 +123,7 @@ async function handleSearch(event) {
                     var myDt_Txt = data.list[i].dt_txt;
                     if (myDt_Txt.includes("12:00:00")){
                         console.log(data.list[i]);
-                        cardMaker(locationName, data.list[i].main.temp, data.list[i].main.feels_like, data.list[i].main.humidity, data.list[i].wind.speed, data.list[i].wind.deg, data.list[i].weather[0].icon, $('#forecast'), data.list[i].dt_txt);
+                        cardMaker(locationName, data.list[i].main.temp, data.list[i].main.feels_like, data.list[i].main.humidity, data.list[i].wind.speed, data.list[i].wind.deg, data.list[i].weather[0].icon, $('#forecast'), data.list[i].dt);
                     }
                 }
             })
