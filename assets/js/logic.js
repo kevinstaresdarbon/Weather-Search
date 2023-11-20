@@ -1,17 +1,25 @@
 
-async function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, iconcode, $element) {
+async function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, iconcode, $element, timestring) {
 
-    var $icon = $('<div id="icon" class="card-image-top"><img id="wicon" src="http://openweathermap.org/img/w/' + iconcode + '.png" alt="Weather icon"></img></div>');
+    if (!timestring){
+        timestring = "Now";
+    }
+    var cardTemplate = (`<section class="card text-bg-light" style="width:250px;">
+                            <div class="icon" class="card-image-top">
+                                <img class="wicon" src="http://openweathermap.org/img/w/` + iconcode + `.png" alt="Weather icon"></img>
+                            </div>
+                            <div class="card-body card-content"> 
+                                <div class="card-title fs-5">` + location + `</div>
+                                <div class="card-title fs-5">` +  timestring + `</div>
+                                <div class="card-title card-temp fs-5"> Temperature: `+ temp + ` °c </div>
+                                <div class="card-title card-temp fs-5"> Feels like: ` + feelsLike + ` °c </div>
+                                <div class="card-title card-humidity fs-5"> Humidity: ` + humidity + `</div>
+                                <div class="card-title card-wind fs-5"> Wind Speed: ` + windSpeed +`</div>
+                                <div class="card-title card-wind fs-5"> Wind Directon: ` + windDir + `° </div>
+                            </div> 
+                        </section>`);
 
-    var cardTemplate = ('<section class="card text-bg-light"> <div class="card-body card-content"> </div> </section>');
     $element.append(cardTemplate);
-    $('.card').prepend($icon);
-    $('.card-content').append($('<div class="card-title fs-5">' + location + '</div>'));
-    $('.card-content').append($('<div class="card-title card-temp fs-5">' + "Temperature: "+ temp + " celsius" + '</div>'));
-    $('.card-content').append($('<div class="card-title card-temp fs-5">' + "Feels like: " + feelsLike + " celsius" + '</div>'));
-    $('.card-content').append($('<div class="card-title card-humidity fs-5">' + "Humidity: " + humidity + '</div>'));
-    $('.card-content').append($('<div class="card-title card-wind fs-5">' + "Wind Speed: " + windSpeed +'</div>'));
-    $('.card-content').append($('<div class="card-title card-wind fs-5">' + "Wind Directon: " + windDir + " degrees" + '</div>'));
 }
 
 function renderLookup(arr) {
@@ -98,7 +106,7 @@ async function handleSearch(event) {
             .then((data) => {
                 console.log(data);
                 $('#today').empty();
-                cardMaker(data.name, data.main.temp, data.main.feels_like, data.main.humidity, data.wind.speed, data.wind.deg, data.weather[0].icon, $('#today'));
+                cardMaker(data.name, data.main.temp, data.main.feels_like, data.main.humidity, data.wind.speed, data.wind.deg, data.weather[0].icon, $('#today'), data.dt_txt);
             })
             .catch((err) => console.log("An error occured while fetching the current data: " + err));
 
@@ -106,6 +114,16 @@ async function handleSearch(event) {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data);
+                var locationName = data.city.name;
+
+                $('#forecast').empty();
+                for(let i = 0; i < data.list.length; i++){
+                    var myDt_Txt = data.list[i].dt_txt;
+                    if (myDt_Txt.includes("12:00:00")){
+                        console.log(data.list[i]);
+                        cardMaker(locationName, data.list[i].main.temp, data.list[i].main.feels_like, data.list[i].main.humidity, data.list[i].wind.speed, data.list[i].wind.deg, data.list[i].weather[0].icon, $('#forecast'), data.list[i].dt_txt);
+                    }
+                }
             })
             .catch((err) => console.log("An error occured while fetching the five day data: " + err));
     }
