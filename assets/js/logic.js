@@ -66,7 +66,6 @@ function handleLookup(event) {
     fetch(queryGEO)
         .then((response) => response.json())
         .then((data) => {
-            console.log(data)
             renderLookup(data);
         })
         .catch((err) => console.log("Error in geocoding: " + err));
@@ -111,7 +110,6 @@ async function handleSearch(event) {
         fetch(queryURICurrent)
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
                 $('#today').empty();
                 cardMaker(data.name, data.main.temp, data.main.feels_like, data.main.humidity, data.wind.speed, data.wind.deg, data.weather[0].icon, $('#today'), data.dt);
             })
@@ -120,14 +118,12 @@ async function handleSearch(event) {
         fetch(queryURIFiveDay)
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
                 var locationName = data.city.name;
 
                 $('#forecast').empty();
                 for (let i = 0; i < data.list.length; i++) {
                     var myDt_Txt = data.list[i].dt_txt;
                     if (myDt_Txt.includes("12:00:00")) {
-                        console.log(data.list[i]);
                         cardMaker(locationName, data.list[i].main.temp, data.list[i].main.feels_like, data.list[i].main.humidity, data.list[i].wind.speed, data.list[i].wind.deg, data.list[i].weather[0].icon, $('#forecast'), data.list[i].dt);
                     }
                 }
@@ -165,20 +161,26 @@ function renderHistory(arr, $element) {
     }
 }
 
-function checkForKey() {
+async function checkForKey() {
     if (!localStorage.getItem('key')) {
         if (!API_KEY) {
             usesGivenKey = true;
             var GIVEN_KEY = prompt("No api key detected.  Please enter one here:");
-            localStorage.setItem('key', GIVEN_KEY)
+            localStorage.setItem('key', GIVEN_KEY);
         }
-        else localStorage.setItem('key', API_KEY);
+        else {localStorage.setItem('key', API_KEY)};
     }
+}
+
+function resetKey(){
+    localStorage.removeItem('key');
+    location.reload();
 }
 
 $(document).on("submit", handleLookup);
 $(document).on("click", '.location-btn', handleSearch);
 $('#clear-history').on("click", clearHistory);
+$('#resetKeyBtn').on("click", resetKey);
 
 checkForKey();
 
