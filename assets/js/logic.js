@@ -1,9 +1,11 @@
 
 dayjs.extend(window.dayjs_plugin_advancedFormat);
 
+var usesGivenKey = false;
+
 function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, iconcode, $element, timestamp) {
 
-    var currentTime = dayjs(timestamp*1000);
+    var currentTime = dayjs(timestamp * 1000);
 
     var cardTemplate = (`<section class="card text-bg-light d-flex justify-content-between align-items-center" style="width:260px;">
                             <div class="icon" class="card-image-top">
@@ -11,11 +13,11 @@ function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, icon
                             </div>
                             <div class="card-body card-content"> 
                                 <div class="card-title fs-5">` + location + `</div>
-                                <div class="card-title fs-5">` +  currentTime.format("dddd [the] Do [of] MMMM, YYYY") + `</div>
+                                <div class="card-title fs-5">` + currentTime.format("dddd [the] Do [of] MMMM, YYYY") + `</div>
                                 <div class="card-title card-temp fs-5"> Temperature: `+ temp + ` °c </div>
                                 <div class="card-title card-temp fs-5"> Feels like: ` + feelsLike + ` °c </div>
                                 <div class="card-title card-humidity fs-5"> Humidity: ` + humidity + `% </div>
-                                <div class="card-title card-wind fs-5"> Wind Speed: ` + windSpeed +` m/s </div>
+                                <div class="card-title card-wind fs-5"> Wind Speed: ` + windSpeed + ` m/s </div>
                                 <div class="card-title card-wind fs-5"> Wind Direction: ` + windDir + `° </div>
                             </div> 
                         </section>`);
@@ -55,9 +57,11 @@ function handleLookup(event) {
 
     event.preventDefault();
 
+    var STORED_KEY = localStorage.getItem('key');
+
     var location = $('#lookup-input').val();
 
-    var queryGEO = 'http://api.openweathermap.org/geo/1.0/direct?q=' + location + '&limit=5&appid=' + API_KEY;
+    var queryGEO = 'http://api.openweathermap.org/geo/1.0/direct?q=' + location + '&limit=5&appid=' + STORED_KEY;
 
     fetch(queryGEO)
         .then((response) => response.json())
@@ -78,6 +82,8 @@ async function handleSearch(event) {
     var lat = $clicked.attr("data-lat");
     var lon = $clicked.attr("data-lon");
     var text = $clicked.attr("data-text");
+    var STORED_KEY = localStorage.getItem('key');
+
 
 
     if ($clicked.hasClass('isInLookup')) {
@@ -98,9 +104,9 @@ async function handleSearch(event) {
 
 
     if (lat && lon) {
-        var queryURICurrent = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=metric";
+        var queryURICurrent = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + STORED_KEY + "&units=metric";
 
-        var queryURIFiveDay = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=metric";
+        var queryURIFiveDay = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=" + STORED_KEY + "&units=metric";
 
         fetch(queryURICurrent)
             .then((response) => response.json())
@@ -118,9 +124,9 @@ async function handleSearch(event) {
                 var locationName = data.city.name;
 
                 $('#forecast').empty();
-                for(let i = 0; i < data.list.length; i++){
+                for (let i = 0; i < data.list.length; i++) {
                     var myDt_Txt = data.list[i].dt_txt;
-                    if (myDt_Txt.includes("12:00:00")){
+                    if (myDt_Txt.includes("12:00:00")) {
                         console.log(data.list[i]);
                         cardMaker(locationName, data.list[i].main.temp, data.list[i].main.feels_like, data.list[i].main.humidity, data.list[i].wind.speed, data.list[i].wind.deg, data.list[i].weather[0].icon, $('#forecast'), data.list[i].dt);
                     }
@@ -130,7 +136,7 @@ async function handleSearch(event) {
     }
 }
 
-function clearHistory(){
+function clearHistory() {
 
     localStorage.setItem('button-history', JSON.stringify([""]));
     $('#history').empty();
@@ -159,8 +165,21 @@ function renderHistory(arr, $element) {
     }
 }
 
+function checkForKey() {
+    if (!localStorage.getItem('key')) {
+        if (!API_KEY) {
+            usesGivenKey = true;
+            var GIVEN_KEY = prompt("No api key detected.  Please enter one here:");
+            localStorage.setItem('key', GIVEN_KEY)
+        }
+        else localStorage.setItem('key', API_KEY);
+    }
+}
 
 $(document).on("submit", handleLookup);
 $(document).on("click", '.location-btn', handleSearch);
 $('#clear-history').on("click", clearHistory);
+
+checkForKey();
+
 renderHistory(JSON.parse(retrieveHistory()), $('#history'));
