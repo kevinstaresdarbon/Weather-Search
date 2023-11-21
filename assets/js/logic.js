@@ -9,7 +9,7 @@ function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, icon
 
     var cardTemplate = (`<section class="card text-bg-light d-flex justify-content-between align-items-center" style="width:260px;">
                             <div class="icon" class="card-image-top">
-                                <img class="wicon" src="http://openweathermap.org/img/w/` + iconcode + `.png" alt="Weather icon"></img>
+                                <img class="wicon" src="https://openweathermap.org/img/w/` + iconcode + `.png" alt="Weather icon"></img>
                             </div>
                             <div class="card-body card-content"> 
                                 <div class="card-title fs-5">` + location + `</div>
