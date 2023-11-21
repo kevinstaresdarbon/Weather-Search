@@ -1,14 +1,19 @@
-
+// use this to give access to advanced format options in dayjs().format()
 dayjs.extend(window.dayjs_plugin_advancedFormat);
 
 var usesGivenKey = false;
 
+// helper function to make and style cards given the correct parameters, requires a target $element in which to append the card
+
 function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, iconcode, $element, timestamp) {
 
-    var currentTime = dayjs(timestamp * 1000);
+    var currentTime = dayjs(timestamp * 1000); //openweathermap.org counts in seconds so convert to milliseconds for dayjs
 
+    // notice the use of backticks in the formation of cardTemplate!
     var cardTemplate = (`<section class="card text-bg-light d-flex justify-content-between align-items-center" style="width:260px;">
                             <div class="icon" class="card-image-top">
+                                `// url formed from advice given on stackoverflow.com
+                                `
                                 <img class="wicon" src="https://openweathermap.org/img/w/` + iconcode + `.png" alt="Weather icon"></img>
                             </div>
                             <div class="card-body card-content"> 
@@ -34,6 +39,8 @@ function renderLookup(arr) {
 
         var locationStr = "";
 
+// used if blocks here since the data comes back differently for different locations
+
         if (arr[i].name) {
             locationStr += arr[i].name;
         }
@@ -46,12 +53,15 @@ function renderLookup(arr) {
             locationStr += " " + arr[i].country;
         }
 
+        // saves the geo-coding information and location string to the button
+
         var template = $('<div class="btn btn-primary location-btn isInLookup my-1 w-100 h-3r" data-lon="' + arr[i].lon + '"data-lat="' + arr[i].lat + '"  data-text="' + locationStr + '">' + locationStr + '</div>');
 
         $locations.append(template);
     }
 }
 
+// this function is used to provide different address options given a search term
 
 function handleLookup(event) {
 
@@ -78,13 +88,15 @@ async function handleSearch(event) {
 
     $clicked = $(event.target);
     $history = $('#history');
+    //grab the necessary information from the data-* on the generated buttons
     var lat = $clicked.attr("data-lat");
     var lon = $clicked.attr("data-lon");
     var text = $clicked.attr("data-text");
+
     var STORED_KEY = localStorage.getItem('key');
 
 
-
+// check to see if the button was clicked from the lookup pane. if so copy it to the history pane and add an entry to localStorage so that it persists there.
     if ($clicked.hasClass('isInLookup')) {
         $clicked.removeClass('isInLookup');
         var historyStr = retrieveHistory();
@@ -103,13 +115,16 @@ async function handleSearch(event) {
 
 
     if (lat && lon) {
+        // set the query url variables from the supplied information
         var queryURICurrent = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + STORED_KEY + "&units=metric";
 
         var queryURIFiveDay = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=" + STORED_KEY + "&units=metric";
 
+        //fetch the data
         fetch(queryURICurrent)
             .then((response) => response.json())
             .then((data) => {
+                //clear the current (if any) contents and replace them with a card made from the returned data
                 $('#today').empty();
                 cardMaker(data.name, data.main.temp, data.main.feels_like, data.main.humidity, data.wind.speed, data.wind.deg, data.weather[0].icon, $('#today'), data.dt);
             })
@@ -119,11 +134,14 @@ async function handleSearch(event) {
             .then((response) => response.json())
             .then((data) => {
                 var locationName = data.city.name;
-
+                // empty the forecast div 
                 $('#forecast').empty();
+                //loop over the data extracting 5 forecast elements to draw
                 for (let i = 0; i < data.list.length; i++) {
                     var myDt_Txt = data.list[i].dt_txt;
+                    // I chose to select only the 5 pieces of information that relates to midday localtime for my forecast 
                     if (myDt_Txt.includes("12:00:00")) {
+                        //replace the 5 cards into the forecast div
                         cardMaker(locationName, data.list[i].main.temp, data.list[i].main.feels_like, data.list[i].main.humidity, data.list[i].wind.speed, data.list[i].wind.deg, data.list[i].weather[0].icon, $('#forecast'), data.list[i].dt);
                     }
                 }
@@ -132,6 +150,7 @@ async function handleSearch(event) {
     }
 }
 
+// an option to clear the button history is always nice!
 function clearHistory() {
 
     localStorage.setItem('button-history', JSON.stringify([""]));
@@ -139,6 +158,7 @@ function clearHistory() {
 
 }
 
+// this helper function protects us from the situation where there is no button-history key in storage
 function retrieveHistory() {
 
     var historyStr = localStorage.getItem('button-history');
@@ -161,6 +181,7 @@ function renderHistory(arr, $element) {
     }
 }
 
+// this is used to set an api key into local storage
 async function checkForKey() {
     if (!localStorage.getItem('key')) {
 
@@ -171,16 +192,20 @@ async function checkForKey() {
     }
 }
 
+// added this in-case a bad key gets put into storage
 function resetKey() {
     localStorage.removeItem('key');
     location.reload();
 }
 
+// initialise event handlers
 $(document).on("submit", handleLookup);
 $(document).on("click", '.location-btn', handleSearch);
 $('#clear-history').on("click", clearHistory);
 $('#resetKeyBtn').on("click", resetKey);
 
+// call this to ensure a key is set
 checkForKey();
 
+// call this to persist the button-history
 renderHistory(JSON.parse(retrieveHistory()), $('#history'));
