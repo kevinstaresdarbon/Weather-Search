@@ -5,7 +5,7 @@ function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, icon
 
     var currentTime = dayjs(timestamp*1000);
 
-    var cardTemplate = (`<section class="card text-bg-light" style="width:250px;">
+    var cardTemplate = (`<section class="card text-bg-light d-flex justify-content-between align-items-center" style="width:260px;">
                             <div class="icon" class="card-image-top">
                                 <img class="wicon" src="http://openweathermap.org/img/w/` + iconcode + `.png" alt="Weather icon"></img>
                             </div>
@@ -14,8 +14,8 @@ function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, icon
                                 <div class="card-title fs-5">` +  currentTime.format("dddd [the] Do [of] MMMM, YYYY") + `</div>
                                 <div class="card-title card-temp fs-5"> Temperature: `+ temp + ` °c </div>
                                 <div class="card-title card-temp fs-5"> Feels like: ` + feelsLike + ` °c </div>
-                                <div class="card-title card-humidity fs-5"> Humidity: ` + humidity + `</div>
-                                <div class="card-title card-wind fs-5"> Wind Speed: ` + windSpeed +`</div>
+                                <div class="card-title card-humidity fs-5"> Humidity: ` + humidity + `% </div>
+                                <div class="card-title card-wind fs-5"> Wind Speed: ` + windSpeed +` m/s </div>
                                 <div class="card-title card-wind fs-5"> Wind Direction: ` + windDir + `° </div>
                             </div> 
                         </section>`);
