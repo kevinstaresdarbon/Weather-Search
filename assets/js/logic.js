@@ -61,7 +61,7 @@ function handleLookup(event) {
 
     var location = $('#lookup-input').val();
 
-    var queryGEO = 'http://api.openweathermap.org/geo/1.0/direct?q=' + location + '&limit=5&appid=' + STORED_KEY;
+    var queryGEO = 'https://api.openweathermap.org/geo/1.0/direct?q=' + location + '&limit=5&appid=' + STORED_KEY;
 
     fetch(queryGEO)
         .then((response) => response.json())
