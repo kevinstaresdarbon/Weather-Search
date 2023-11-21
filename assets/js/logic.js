@@ -1,9 +1,8 @@
 
 dayjs.extend(window.dayjs_plugin_advancedFormat);
 
-async function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, iconcode, $element, timestamp) {
+function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, iconcode, $element, timestamp) {
 
-    var startOfMonth = dayjs().startOf('month');
     var currentTime = dayjs(timestamp*1000);
 
     var cardTemplate = (`<section class="card text-bg-light" style="width:250px;">
@@ -45,7 +44,7 @@ function renderLookup(arr) {
             locationStr += " " + arr[i].country;
         }
 
-        var template = $('<div class="btn btn-secondary location-btn isInLookup my-1 w-100 h-3r" data-lon="' + arr[i].lon + '"data-lat="' + arr[i].lat + '"  data-text="' + locationStr + '">' + locationStr + '</div>');
+        var template = $('<div class="btn btn-primary location-btn isInLookup my-1 w-100 h-3r" data-lon="' + arr[i].lon + '"data-lat="' + arr[i].lat + '"  data-text="' + locationStr + '">' + locationStr + '</div>');
 
         $locations.append(template);
     }
@@ -131,6 +130,13 @@ async function handleSearch(event) {
     }
 }
 
+function clearHistory(){
+
+    localStorage.setItem('button-history', JSON.stringify([""]));
+    $('#history').empty();
+
+}
+
 function retrieveHistory() {
 
     var historyStr = localStorage.getItem('button-history');
@@ -144,11 +150,11 @@ function retrieveHistory() {
 
 }
 
-function renderHistory(arr, element) {
+function renderHistory(arr, $element) {
     for (let i = 0; i < arr.length; i++) {
         if (arr[i].lat) {
-            var button = $('<div class="btn btn-secondary location-btn my-1 w-100 h-3r" data-lon="' + arr[i].lon + '"data-lat="' + arr[i].lat + '">' + arr[i].text + '</div>');
-            element.prepend(button);
+            var button = $('<div class="btn btn-primary location-btn my-1 w-100 h-3r" data-lon="' + arr[i].lon + '"data-lat="' + arr[i].lat + '">' + arr[i].text + '</div>');
+            $element.prepend(button);
         }
     }
 }
@@ -156,5 +162,5 @@ function renderHistory(arr, element) {
 
 $(document).on("submit", handleLookup);
 $(document).on("click", '.location-btn', handleSearch);
-
+$('#clear-history').on("click", clearHistory);
 renderHistory(JSON.parse(retrieveHistory()), $('#history'));
