@@ -163,16 +163,15 @@ function renderHistory(arr, $element) {
 
 async function checkForKey() {
     if (!localStorage.getItem('key')) {
-        if (!API_KEY) {
-            usesGivenKey = true;
-            var GIVEN_KEY = prompt("No api key detected.  Please enter one here:");
-            localStorage.setItem('key', GIVEN_KEY);
-        }
-        else {localStorage.setItem('key', API_KEY)};
+
+        usesGivenKey = true;
+        var GIVEN_KEY = prompt("No api key detected.  Please enter one here:");
+        localStorage.setItem('key', GIVEN_KEY);
+
     }
 }
 
-function resetKey(){
+function resetKey() {
     localStorage.removeItem('key');
     location.reload();
 }
