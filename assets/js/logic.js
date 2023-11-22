@@ -9,7 +9,7 @@ function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, icon
 
     var currentTime = dayjs(timestamp * 1000); //openweathermap.org counts in seconds so convert to milliseconds for dayjs
 
-    // notice the use of backticks in the formation of cardTemplate!
+    // notice the use of backticks in the formation of cardTemplate!  url for icon formed from advice given on stackoverflow.com
     var cardTemplate = `<section class="card text-bg-light d-flex justify-content-between align-items-center" style="width:260px;">
                             <div class="icon" class="card-image-top">
                                 <img class="wicon" src="https://openweathermap.org/img/w/` + iconcode + `.png" alt="Weather icon"></img>
