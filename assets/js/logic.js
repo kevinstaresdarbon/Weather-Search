@@ -12,8 +12,6 @@ function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, icon
     // notice the use of backticks in the formation of cardTemplate!
     var cardTemplate = `<section class="card text-bg-light d-flex justify-content-between align-items-center" style="width:260px;">
                             <div class="icon" class="card-image-top">
-                                `// url formed from advice given on stackoverflow.com
-                                `
                                 <img class="wicon" src="https://openweathermap.org/img/w/` + iconcode + `.png" alt="Weather icon"></img>
                             </div>
                             <div class="card-body card-content"> 
