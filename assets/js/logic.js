@@ -10,7 +10,7 @@ function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, icon
     var currentTime = dayjs(timestamp * 1000); //openweathermap.org counts in seconds so convert to milliseconds for dayjs
 
     // notice the use of backticks in the formation of cardTemplate!
-    var cardTemplate = (`<section class="card text-bg-light d-flex justify-content-between align-items-center" style="width:260px;">
+    var cardTemplate = `<section class="card text-bg-light d-flex justify-content-between align-items-center" style="width:260px;">
                             <div class="icon" class="card-image-top">
                                 `// url formed from advice given on stackoverflow.com
                                 `
@@ -25,7 +25,7 @@ function cardMaker(location, temp, feelsLike, humidity, windSpeed, windDir, icon
                                 <div class="card-title card-wind fs-5"> Wind Speed: ` + windSpeed + ` m/s </div>
                                 <div class="card-title card-wind fs-5"> Wind Direction: ` + windDir + `° </div>
                             </div> 
-                        </section>`);
+                        </section>`;
 
     $element.append(cardTemplate);
 }
